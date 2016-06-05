@@ -7,7 +7,7 @@
 
 typedef struct dict* Dict;
 
-Dict *dict_init(void);
+Dict *dict_init(int valueSize);
 
 void dict_set(Dict *d, char *key, void *value);
 
