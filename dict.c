@@ -18,10 +18,10 @@ typedef struct node{
 	struct node *next;
 }Node;
 
-struct Dict{
+struct dict{
 	Node *table[HASHSIZE];
 	int valueSize;
-}
+};
 
 unsigned _hash(char *s)
 {
@@ -61,8 +61,8 @@ Dict *dict_init(int valueSize){
 
 void dict_set(Dict *d, char *key, void *value){
 	unsigned idx = _hash(key);
-	Node *nd=d[idx];
-	if(nd==NULL) d[idx]=node_init(key,value,d->valueSize);
+	Node *nd=d->table[idx];
+	if(nd==NULL) d->table[idx]=node_init(key,value,d->valueSize);
 	for(;strcmp(nd->key,key);nd=nd->next)
 		if(nd->next==NULL){
 			nd->next=node_init(key,value,d->valueSize);
@@ -73,17 +73,17 @@ void dict_set(Dict *d, char *key, void *value){
 
 void *dict_getValue(Dict *d, char *key){
 	Node *nd;
-	for(nd=d[_hash(key)];nd!=NULL;nd=nd->next)
+	for(nd=d->table[_hash(key)];nd!=NULL;nd=nd->next)
 		if(!strcmp(nd->key,key)) return nd->value;
 	return NULL;
 }
 
 void dict_remove(Dict *d, char *key){
 	unsigned idx = _hash(key);
-	Node *nd=d[idx], *aux=NULL;
+	Node *nd=d->table[idx], *aux=NULL;
 	for(;nd!=NULL;aux=nd,nd=nd->next)
 		if(!strcmp(nd->key,key)){
-			(aux==NULL) ? d[idx]=nd : aux->next=nd->next;
+			(aux==NULL) ? (d->table[idx]=nd) : (aux->next=nd->next);
 			node_free(nd);
 			return;
 		}
@@ -93,7 +93,7 @@ void dict_free(Dict *d){
 	Node *aux, *nd;
 	int i;
 	for(i=0;i<HASHSIZE;i++)
-		for(nd=d[i];nd!=NULL;aux=nd,nd=nd->next,node_free(aux));
+		for(nd=d->table[i];nd!=NULL;aux=nd,nd=nd->next,node_free(aux));
 	free(d);
 }
 
