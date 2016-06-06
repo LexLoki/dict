@@ -62,13 +62,14 @@ Dict *dict_init(int valueSize){
 void dict_set(Dict *d, char *key, void *value){
 	unsigned idx = _hash(key);
 	Node *nd=d->table[idx];
-	if(nd==NULL) d->table[idx]=node_init(key,value,d->valueSize);
-	for(;strcmp(nd->key,key);nd=nd->next)
+	if(nd==NULL){
+		d->table[idx]=node_init(key,value,d->valueSize);
+	}
+	else for(;strcmp(nd->key,key);nd=nd->next)
 		if(nd->next==NULL){
 			nd->next=node_init(key,value,d->valueSize);
 			return;
 		}
-	memcpy(nd->value,value,d->valueSize);
 }
 
 void *dict_getValue(Dict *d, char *key){
@@ -83,7 +84,7 @@ void dict_remove(Dict *d, char *key){
 	Node *nd=d->table[idx], *aux=NULL;
 	for(;nd!=NULL;aux=nd,nd=nd->next)
 		if(!strcmp(nd->key,key)){
-			(aux==NULL) ? (d->table[idx]=nd) : (aux->next=nd->next);
+			(aux==NULL) ? (d->table[idx]=nd->next) : (aux->next=nd->next);
 			node_free(nd);
 			return;
 		}
